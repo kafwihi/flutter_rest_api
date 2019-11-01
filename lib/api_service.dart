@@ -33,5 +33,13 @@ class ApiService{
    static Future<dynamic> getCommentsForPost(int postId) async{
    return await _get('https://jsonplaceholder.typicode.com/users');
    }
+static Future<bool> addPost(Map<String, dynamic> post) async{
 
+  try{
+         final response = await http.post('https://jsonplaceholder.typicode.com/posts',body:post);
+          return response.statusCode == 201;
+  }catch(e){
+        return false;
+  }
+   }
 }

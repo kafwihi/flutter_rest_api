@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'api_service.dart';
 
 void main() => runApp(MyApp());
-
+String userId;
 class Urls {
   static const BASE_API_URL = "https://jsonplaceholder.typicode.com";
 }
@@ -89,16 +89,28 @@ class _LoginState extends State<Login> {
                       return;
                     } else {
 
-                   final userWithUsernameExists = users.any((u) => u['username']
-                    == _usernameController.text);
-                      if(userWithUsernameExists){
+  //final userWithUsernameExists = users.any((u) => u['username'] == _usernameController.text);
+  final user = users.where((u) => u['username'] == _usernameController.text).first;
+            final userWithUsernameExists = user != null;
+                                       if(userWithUsernameExists){
+                                         userId = user['id'].toString();
                         Navigator.push(context, MaterialPageRoute(
                           builder: (context) => Posts()
                           )
                           );
                       }else
                       {
-
+   showDialog(
+                    builder: (context) => AlertDialog(
+                      title: Text('Incorrect Username'),
+                      content: Text('Try with a different Username'),
+                      actions: <Widget>[ FlatButton(
+                        onPressed: () { Navigator.pop(context);},
+                        child: Text('Ok'),
+                      )],
+                    ),
+///context: context
+                  );
                       }
                     }
                   },
@@ -235,7 +247,7 @@ class Post extends StatelessWidget{
                 );
               }
               else
-                          {return Center(child: CircularProgressIndicator(),);}
+                          {return Center(child: CircularProgressIndicator(),);}//this was the problem
             },
           )
         ],
@@ -243,16 +255,84 @@ class Post extends StatelessWidget{
     );
   }
 }
-/*
+
 class NewPost extends StatefulWidget{
   @override
-  _NewPostState createtate() => _NewPostState();
+  _NewPostState createState() => _NewPostState();
+
 }
 
 class _NewPostState extends State<NewPost> {
+  final _titleController = TextEditingController();
+  final _bodyController = TextEditingController();
   @override
   Widget build(BuildContext context){
-    return Container();
+    return Scaffold(
+      appBar: AppBar(title: Text('New Post')
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            TextField(decoration: InputDecoration(hintText: 'Title')),
+            TextField(decoration: InputDecoration(hintText: 'Body')),
+            Container(height: 20),
+            SizedBox(
+              height: 60,
+              width: double.infinity,
+              child: RaisedButton(
+              color: Colors.blue,
+              child: Text('Submit', style:TextStyle(color: Colors.white)),
+              onPressed: () {
+                if(_titleController.text.isEmpty || _bodyController.text.isEmpty){
+                  showDialog(
+                    builder: (context) => AlertDialog(
+                      title: Text('Failure'),
+                      content: Text('You nedd to input values'),
+                      actions: <Widget>[ FlatButton(
+                        onPressed: () { Navigator.pop(context);},
+                        child: Text('Ok'),
+                      )],
+                    ),
+                    context: context
+                  );
+                  return;
+                }
+                final post = {
+                  'title': _titleController,
+                  'body':_bodyController,
+                  'userid': userId
+                };
+                ApiService.addPost(post)
+                .then((success){
+                  String title, text;
+                  if(success){
+                    title = "Success";
+                    text = "Post Submitted Well";
+                  }
+                  else {
+                    title = "Error";
+                    text = "An Error Occurred";
+                  }
+                   showDialog(
+                    builder: (context) => AlertDialog(
+                      title: Text(title),
+                      content: Text(text),
+                      actions: <Widget>[ FlatButton(
+                        onPressed: () { Navigator.pop(context);},
+                        child: Text('Ok'),
+                      )],
+                    ),
+                    context: context
+                  );
+                });
+
+               },
+            ),)
+          ],
+        ),
+      ),
+    );
   }
 }
-*/
