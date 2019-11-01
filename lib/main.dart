@@ -331,7 +331,7 @@ class _NewPostState extends State<NewPost> {
                 setState(() {
                  _isLoading = true;
                 });
-                ApiService.addPost(user)
+                ApiService.addPost(post)
                 .then((success){
                    setState(() {
                  _isLoading = false;
