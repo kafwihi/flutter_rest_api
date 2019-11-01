@@ -19,8 +19,10 @@ class ApiService{
 
 
 
-  static Future<List<dynamic>> getUserList() async{
-   return await _get('${Urls.BASE_API_URL}/users');
+  static Future<List<dynamic>> getUserList() async{//
+   //return await _get('${Urls.BASE_API_URL}/users');
+   return await _get('http://192.168.0.27:4000/users');
+
    }
 
    static Future<List<dynamic>> getPostList() async{
@@ -35,8 +37,10 @@ class ApiService{
    }
 static Future<bool> addPost(Map<String, dynamic> post) async{
 
-  try{
-         final response = await http.post('https://jsonplaceholder.typicode.com/posts',body:post);
+  try{///http://192.168.0.27:4000/users
+         //final response = await http.post('https://jsonplaceholder.typicode.com/posts',body:post);
+         final response = await http.post('http://192.168.0.27:4000/users',body:post);
+
           return response.statusCode == 201;
   }catch(e){
         return false;

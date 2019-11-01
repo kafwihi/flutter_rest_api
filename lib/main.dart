@@ -130,8 +130,12 @@ class Posts extends StatelessWidget{
   @override
  Widget build(BuildContext context){
     return Scaffold(
-      //floatingActionButton:FloatingActionButton(child: Icon(Icons.add), onPressed: () {
-        // Navigator.push(context, MaterialPageRoute( builder: (context) => NewPost(),))}) ,
+      floatingActionButton:FloatingActionButton(child: Icon(Icons.add), onPressed: () {
+      Navigator.push(context, MaterialPageRoute( builder: (context) => NewPost(),
+      ),
+      );
+      }
+      ,) ,
       appBar: AppBar(title: Text('Posts'),),
       body: FutureBuilder(
         future: ApiService.getPostList(),
@@ -263,8 +267,10 @@ class NewPost extends StatefulWidget{
 }
 
 class _NewPostState extends State<NewPost> {
+  bool _isLoading = false;
   final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
+
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -275,10 +281,14 @@ class _NewPostState extends State<NewPost> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            TextField(decoration: InputDecoration(hintText: 'Title')),
-            TextField(decoration: InputDecoration(hintText: 'Body')),
-            Container(height: 20),
-            SizedBox(
+            TextField(
+              controller: _titleController,
+              decoration: InputDecoration(hintText: 'Title')),
+            TextField(
+              controller: _bodyController,
+              decoration: InputDecoration(hintText: 'Body')),
+           Container(height: 20),
+             _isLoading? CircularProgressIndicator():SizedBox(
               height: 60,
               width: double.infinity,
               child: RaisedButton(
@@ -289,7 +299,7 @@ class _NewPostState extends State<NewPost> {
                   showDialog(
                     builder: (context) => AlertDialog(
                       title: Text('Failure'),
-                      content: Text('You nedd to input values'),
+                      content: Text('You need to input values'),
                       actions: <Widget>[ FlatButton(
                         onPressed: () { Navigator.pop(context);},
                         child: Text('Ok'),
@@ -300,12 +310,33 @@ class _NewPostState extends State<NewPost> {
                   return;
                 }
                 final post = {
-                  'title': _titleController,
-                  'body':_bodyController,
-                  'userid': userId
+                 'userid': userId,
+                  'title': _titleController.text,
+                  'body':_bodyController.text
+
+
+                  /*  "userId": 1,
+        "title": "kenya one2",
+        "body": "welcome all2"*/
+
                 };
-                ApiService.addPost(post)
+
+           final     user= {
+      'username': "s",
+      'bio': "s",
+      'token': "s",
+      'email': "s@d",
+      'imageURL': "http://localhost:8080/img/logo.82b9c7a5.png",
+    };
+                setState(() {
+                 _isLoading = true;
+                });
+                ApiService.addPost(user)
                 .then((success){
+                   setState(() {
+                 _isLoading = false;
+                });
+
                   String title, text;
                   if(success){
                     title = "Success";
